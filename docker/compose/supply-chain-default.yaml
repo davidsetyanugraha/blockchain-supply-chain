@@ -76,15 +76,12 @@ services:
       - SERVER=http://server:3000
     command: |
       bash -c "
-        cd asset_client/ && npm run build && cd - &&
         cd fish_client/ && npm run build && cd - &&
         if [ ! -f /root/.sawtooth/keys/root.priv ]; then
           sawtooth keygen &&
           cd server/ &&
           npm run init &&
-          npm run make-asset &&
           npm run make-fish &&
-          npm run seed-sample-assets &&
           npm run seed-sample-fish &&
           cd - &&
           tail -f /dev/null

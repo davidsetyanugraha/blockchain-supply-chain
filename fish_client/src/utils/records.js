@@ -65,10 +65,30 @@ const countPropertyUpdates = (record) => {
     (sum, updates) => sum + updates.length, 0)
 }
 
+const checkStatus = (record) => {
+  return record.final ? "Final" : "On Process"
+}
+
+const getCurrentOwner = (record) => {
+  return record.owner ? record.owner : "On Process"
+}
+
+const getCurrentCustodian = (record) => {
+  return record.custodian ? record.custodian : "-"
+}
+
+const getCurrentReporter = (record) => {
+  return record.reporter ? record.reporter : "-"
+}
+
 module.exports = {
   getPropertyValue,
   isReporter,
   getLatestPropertyUpdateTime,
   getOldestPropertyUpdateTime,
-  countPropertyUpdates
+  countPropertyUpdates,
+  checkStatus,
+  getCurrentOwner,
+  getCurrentCustodian,
+  getCurrentReporter
 }

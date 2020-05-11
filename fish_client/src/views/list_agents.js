@@ -35,7 +35,7 @@ const AgentList = {
         vnode.state.agents = sortBy(agents, 'name')
         vnode.state.filteredAgents = vnode.state.agents
       })
-        .then(() => { vnode.state.refreshId = setTimeout(refresh, 2000) })
+        // .then(() => { vnode.state.refreshId = setTimeout(refresh, 2000) })
     }
 
     refresh()

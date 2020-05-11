@@ -21,7 +21,8 @@ const truncate = require('lodash/truncate')
 const {Table, FilterGroup, PagingButtons} = require('../components/tables')
 const api = require('../services/api')
 const { formatTimestamp } = require('../services/parsing')
-const {getPropertyValue, getLatestPropertyUpdateTime, getOldestPropertyUpdateTime, countPropertyUpdates} = require('../utils/records')
+const {getPropertyValue, getLatestPropertyUpdateTime, getOldestPropertyUpdateTime, countPropertyUpdates, checkStatus, 
+  getCurrentCustodian, getCurrentOwner, getCurrentReporter} = require('../utils/records')
 
 const PAGE_SIZE = 50
 
@@ -40,7 +41,7 @@ const FishList = {
         })
         vnode.state.filteredRecords = vnode.state.records
       })
-        .then(() => { vnode.state.refreshId = setTimeout(refresh, 2000) })
+        // .then(() => { vnode.state.refreshId = setTimeout(refresh, 2000) })
     }
 
     refresh()
@@ -61,7 +62,11 @@ const FishList = {
             'Species',
             'Added',
             'Updated',
-            'Updates'
+            // 'Updates',
+            'Status',
+            // 'Owner',
+            // 'Custodian',
+            // 'Reporter'
           ],
           rows: vnode.state.filteredRecords.slice(
             vnode.state.currentPage * PAGE_SIZE,
@@ -75,7 +80,11 @@ const FishList = {
                   // added on the initial create
                   formatTimestamp(getOldestPropertyUpdateTime(rec)),
                   formatTimestamp(getLatestPropertyUpdateTime(rec)),
-                  countPropertyUpdates(rec)
+                  // countPropertyUpdates(rec),
+                  checkStatus(rec),
+                  // getCurrentOwner(rec),
+                  // getCurrentCustodian(rec),
+                  // getCurrentReporter(rec)
                 ]),
           noRowsText: 'No records found'
         })
@@ -97,7 +106,9 @@ const _controlButtons = (vnode, publicKey) => {
           filters: {
             'All': () => { vnode.state.filteredRecords = vnode.state.records },
             'Owned': () => filterRecords((record) => record.owner === publicKey),
-            'Custodian': () => filterRecords((record) => record.custodian === publicKey),
+            'Custodian': () => {
+              let res = filterRecords((record) => record.custodian === publicKey)
+            },
             'Reporting': () => filterRecords(
               (record) => record.properties.reduce(
                 (owned, prop) => owned || prop.reporters.indexOf(publicKey) > -1, false))

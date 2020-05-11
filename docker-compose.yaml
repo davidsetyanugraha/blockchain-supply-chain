@@ -29,7 +29,6 @@ services:
         - no_proxy
     volumes:
       - .:/sawtooth-supply-chain
-      - /sawtooth-supply-chain/asset_client/node_modules
       - /sawtooth-supply-chain/fish_client/node_modules
       - /sawtooth-supply-chain/server/node_modules
     depends_on:
@@ -44,15 +43,12 @@ services:
       - 'no_proxy=rest-api,server,eth0,validator,${no_proxy}'
     command: |
       bash -c "
-        cd asset_client/ && npm run build && cd - &&
         cd fish_client/ && npm run build && cd - &&
         if [ ! -f /root/.sawtooth/keys/root.priv ]; then
           sawtooth keygen &&
           cd server/ &&
           npm run init &&
-          npm run make-asset &&
           npm run make-fish &&
-          npm run seed-sample-assets &&
           npm run seed-sample-fish &&
           cd -
         fi;
@@ -133,19 +129,6 @@ services:
       - 'http_proxy=${http_proxy}'
       - 'https_proxy=${https_proxy}'
       - 'no_proxy=rest-api,server,eth0,validator,${no_proxy}'
-
-  asset-client:
-    image: supply-asset-client
-    container_name: supply-asset-client
-    build: ./asset_client
-    volumes:
-      - ./asset_client/public/:/usr/local/apache2/htdocs/
-    expose:
-      - 80
-    ports:
-      - '8021:80'
-    depends_on:
-      - server
 
   fish-client:
     image: supply-fish-client
