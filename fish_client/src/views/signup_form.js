@@ -73,6 +73,7 @@ const userSubmitter = state => e => {
     .then(() => api.post('users', user))
     .then(res => api.setAuth(res.authorization))
     .then(() => m.route.set('/'))
+    .catch(err => alert(err))
 }
 
 /**

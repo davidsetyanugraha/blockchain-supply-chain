@@ -44,6 +44,7 @@ const LoginForm = {
                                          res.encryptedKey)
               m.route.set('/')
             })
+            .catch(err => alert(err))
         }
       },
       m('legend', 'Login Agent'),
