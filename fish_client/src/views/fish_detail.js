@@ -458,7 +458,7 @@ const AuthorizeReporter = {
         m('.col-6',
           m('input.form-control', {
             type: 'text',
-            placeholder: 'Add reporter by name or public key...',
+            placeholder: 'Add reporter by public key...',
             value: vnode.state.reporter,
             oninput: m.withAttr('value', (value) => {
               // clear any previously matched values

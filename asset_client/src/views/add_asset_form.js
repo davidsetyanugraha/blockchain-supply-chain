@@ -102,7 +102,7 @@ const AddAssetForm = {
               m('.col-sm-8',
                 m('input.form-control', {
                   type: 'text',
-                  placeholder: 'Add reporter by name or public key...',
+                  placeholder: 'Add reporter by public key...',
                   oninput: m.withAttr('value', (value) => {
                     // clear any previously matched values
                     vnode.state.reporters[i].reporterKey = null
