@@ -156,6 +156,9 @@ const AgentDetailPage = {
       layout.title(_.get(vnode.state, 'agent.name', '')),
       m('.container',
         layout.row(staticField('Public Key', publicKey)),
+        publicKey === api.getPublicKey() ? profileContent : null),
+      m('.container',
+        layout.row(staticField('Money', "$"+"10"+"")),
         publicKey === api.getPublicKey() ? profileContent : null)
     ]
   }

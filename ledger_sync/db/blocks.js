@@ -39,6 +39,7 @@ const getForkedDocRemover = blockNum => tableName => {
 }
 
 const resolveFork = block => {
+  console.log("resolve fork: " + block.blockNum)
   const defork = getForkedDocRemover(block.blockNum)
   return db.modifyTable('blocks', blocks => {
     return blocks
@@ -62,6 +63,7 @@ const insert = block => {
       // If the blockNum did not already exist, or had the same id
       // there is no fork, return the block
       if (!result.blockId || result.blockId === block.blockId) {
+        console.log("resolve fork cancelled because blockNum did not exist: [BlockId : "+ result.blockId + " ]")
         return block
       }
       return resolveFork(block)

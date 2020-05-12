@@ -75,15 +75,18 @@ const TransferDropdown = {
                   e.preventDefault()
                   if (proposal && proposal.issuingAgent === publicKey) {
                     _answerProposal(record, agent.key, ROLE_TO_ENUM[role],
-                                    payloads.answerProposal.enum.CANCEL)
+                                    payloads.answerProposal.enum.CANCEL, "Your transfer (_answerProposal) has been triggered! please wait for confirmation to receive payment..")
                       .then(onsuccess)
+                      .catch(err => alert(err))
                   } else {
-                    _submitProposal(record, ROLE_TO_ENUM[role], agent.key)
+                    _submitProposal(record, ROLE_TO_ENUM[role], agent.key, "Your transfer (_submitProposal) has been triggered! please wait for confirmation to receive payment..")
                       .then(onsuccess)
+                      .catch(err => alert(err))
                   }
                 }
               }, m('span.text-truncate',
                    truncate(agent.name, { length: 32 }),
+                   " (Earnings: $" + "10" + " )",
                    (proposal ? ' \u2718' : '')))
             ]
           })))
@@ -122,21 +125,23 @@ const TransferControl = {
             onclick: (e) => {
               e.preventDefault()
               _answerProposal(record, publicKey, ROLE_TO_ENUM[role],
-                              payloads.answerProposal.enum.ACCEPT)
+                              payloads.answerProposal.enum.ACCEPT, "Transferring money to sender!")
 
                 .then(onsuccess)
+                .catch(err => alert(err))
             }
           },
-          `Accept ${label}`),
+          `Accept and Pay`),
           m('button.btn.btn-danger.ml-auto', {
             onclick: (e) => {
               e.preventDefault()
               _answerProposal(record, publicKey, ROLE_TO_ENUM[role],
-                              payloads.answerProposal.enum.REJECT)
+                              payloads.answerProposal.enum.REJECT, "Cancelling transaction!")
                 .then(onsuccess)
+                .catch(err => alert(err))
             }
           },
-          `Reject`))
+          `Cancel payment`))
       ]
     } else {
       return null
@@ -165,7 +170,7 @@ const ReporterControl = {
           record,
           agents,
           onsubmit: ([publicKey, properties]) =>
-          _authorizeReporter(record, publicKey, properties).then(onsuccess)
+          _authorizeReporter(record, publicKey, properties).then(onsuccess).catch(err => alert(err))
         }),
 
         // Outstanding reporters
@@ -180,6 +185,7 @@ const ReporterControl = {
                   e.preventDefault()
                   _revokeAuthorization(record, key, properties)
                     .then(onsuccess)
+                    .catch(err => alert(err))
                 }
               },
               'Revoke Authorization'))
@@ -198,6 +204,7 @@ const ReporterControl = {
                     _answerProposal(record, p.receivingAgent, ROLE_TO_ENUM['reporter'],
                                     payloads.answerProposal.enum.CANCEL)
                       .then(onsuccess)
+                      .catch(err => alert(err))
                   }
                 },
                 'Rescind Proposal')))
@@ -213,6 +220,7 @@ const ReporterControl = {
               _answerProposal(record, publicKey, ROLE_TO_ENUM['reporter'],
                               payloads.answerProposal.enum.ACCEPT)
                 .then(onsuccess)
+                .catch(err => alert(err))
             }
           },
           `Accept Reporting Authorization for ${proposal.properties}`),
@@ -222,6 +230,7 @@ const ReporterControl = {
               _answerProposal(record, publicKey, ROLE_TO_ENUM['reporter'],
                               payloads.answerProposal.enum.REJECT)
                 .then(onsuccess)
+                .catch(err => alert(err))
             }
           },
           `Reject`))
@@ -277,6 +286,7 @@ const ReportLocation = {
             vnode.state.longitude = ''
           })
           .then(onsuccess)
+          .catch(err => alert(err))
         }
       },
       m('.form-row',
@@ -331,6 +341,7 @@ const ReportValue = {
             vnode.state.value = ''
           })
           .then(onsuccess)
+          .catch(err => alert(err))
         }
       },
         m('.form-row',
@@ -370,6 +381,7 @@ const ReportTilt = {
             vnode.state.y = null
           })
           .then(onsuccess)
+          .catch(err => alert(err))
         }
       },
       m('.form-row',
@@ -417,6 +429,7 @@ const ReportShock = {
             vnode.state.duration = null
           })
           .then(onsuccess)
+          .catch(err => alert(err))
         }
       },
       m('.form-row',
@@ -530,6 +543,8 @@ const FishDetail = {
           _labelProperty('Updated',
                          _formatTimestamp(getLatestPropertyUpdateTime(record)))),
 
+        // _row(_labelProperty('Automatic Payment', "$10")),
+
         _row(
           _labelProperty('Owner', _agentLink(owner)),
           m(TransferControl, {
@@ -537,7 +552,7 @@ const FishDetail = {
             record,
             agents: vnode.state.agents,
             role: 'owner',
-            label: 'Ownership',
+            label: 'to',
             onsuccess: () => _loadData(vnode.attrs.recordId, vnode.state)
           })),
 
@@ -551,6 +566,8 @@ const FishDetail = {
             label: 'Custodianship',
             onsuccess: () => _loadData(vnode.attrs.recordId, vnode.state)
           })),
+        
+        _row(_labelProperty('Path (experimental mode)', _agentLink(owner))),
 
         _row(_labelProperty('Species', getPropertyValue(record, 'species'))),
 
@@ -679,7 +696,7 @@ const _loadData = (recordId, state) => {
   })
 }
 
-const _submitProposal = (record, role, publicKey) => {
+const _submitProposal = (record, role, publicKey, msg = "Successfully submitted proposal") => {
   let transferPayload = payloads.createProposal({
     recordId: record.recordId,
     receivingAgent: publicKey,
@@ -687,11 +704,12 @@ const _submitProposal = (record, role, publicKey) => {
   })
 
   return transactions.submit([transferPayload], true).then(() => {
-    console.log('Successfully submitted proposal')
+    alert(msg)
+    console.log(msg)
   })
 }
 
-const _answerProposal = (record, publicKey, role, response) => {
+const _answerProposal = (record, publicKey, role, response, msg = "Successfully submitted answer") => {
   let answerPayload = payloads.answerProposal({
     recordId: record.recordId,
     receivingAgent: publicKey,
@@ -700,7 +718,8 @@ const _answerProposal = (record, publicKey, role, response) => {
   })
 
   return transactions.submit([answerPayload], true).then(() => {
-    console.log('Successfully submitted answer')
+    alert(msg)
+    console.log(msg)
   })
 }
 
@@ -711,7 +730,9 @@ const _updateProperty = (record, value) => {
   })
 
   return transactions.submit([updatePayload], true).then(() => {
-    console.log('Successfully submitted property update')
+    let msg = "Successfully submitted property update"
+    alert(msg)
+    console.log(msg)
   })
 }
 
@@ -721,7 +742,9 @@ const _finalizeRecord = (record) => {
   })
 
   return transactions.submit([finalizePayload], true).then(() => {
-    console.log('finalized')
+    let msg = "Finalized"
+    alert(msg)
+    console.log(msg)
   })
 }
 
@@ -734,7 +757,9 @@ const _authorizeReporter = (record, reporterKey, properties) => {
   })
 
   return transactions.submit([authroizePayload], true).then(() => {
-    console.log('Successfully submitted proposal')
+    let msg = "Successfully submitted proposal"
+    alert(msg)
+    console.log(msg)
   })
 }
 
@@ -746,7 +771,9 @@ const _revokeAuthorization = (record, reporterKey, properties) => {
   })
 
   return transactions.submit([revokePayload], true).then(() => {
-    console.log('Successfully revoked reporter')
+    let msg = "Successfully revoked reporter"
+    alert(msg)
+    console.log(msg)
   })
 }
 
