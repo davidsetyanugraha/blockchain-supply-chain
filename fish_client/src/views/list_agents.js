@@ -54,9 +54,9 @@ const AgentList = {
           headers: [
             'Name',
             'Key',
-            'Owns',
-            'Custodian',
-            'Reports'
+            'Owns (fish)',
+            // 'Custodian',
+            // 'Reports'
           ],
           rows: vnode.state.filteredAgents.slice(
               vnode.state.currentPage * PAGE_SIZE,
@@ -66,8 +66,8 @@ const AgentList = {
                 truncate(agent.name, { length: 32 })),
               truncate(agent.key, { length: 32 }),
               agent.owns.length,
-              agent.custodian.length,
-              agent.reports.length
+              // agent.custodian.length,
+              // agent.reports.length
             ]),
           noRowsText: 'No agents found'
         })
@@ -89,7 +89,7 @@ const _controlButtons = (vnode, publicKey) => {
           filters: {
             'All': () => { vnode.state.filteredAgents = vnode.state.agents },
             'Owners': () => filterAgents(agent => agent.owns.length > 0),
-            'Custodians': () => filterAgents(agent => agent.custodian.length > 0),
+            // 'Custodians': () => filterAgents(agent => agent.custodian.length > 0),
             'Reporters': () => filterAgents(agent => agent.reports.length > 0)
           },
           initialFilter: 'All'

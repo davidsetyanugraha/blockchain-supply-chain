@@ -54,6 +54,7 @@ const _row = (...cols) =>
     .filter((col) => col !== null)
     .map((col) => m('.col', col)))
 
+// sender button
 const TransferDropdown = {
   view (vnode) {
     // Default to no-op
@@ -75,11 +76,11 @@ const TransferDropdown = {
                   e.preventDefault()
                   if (proposal && proposal.issuingAgent === publicKey) {
                     _answerProposal(record, agent.key, ROLE_TO_ENUM[role],
-                                    payloads.answerProposal.enum.CANCEL, "Your transfer (_answerProposal) has been triggered! please wait for confirmation to receive payment..")
+                                    payloads.answerProposal.enum.CANCEL, "Your transfer has been cancelled!")
                       .then(onsuccess)
                       .catch(err => alert(err))
                   } else {
-                    _submitProposal(record, ROLE_TO_ENUM[role], agent.key, "Your transfer (_submitProposal) has been triggered! please wait for confirmation to receive payment..")
+                    _submitProposal(record, ROLE_TO_ENUM[role], agent.key, "Your transfer has been triggered! please wait for confirmation to receive payment..")
                       .then(onsuccess)
                       .catch(err => alert(err))
                   }
@@ -100,6 +101,7 @@ const ROLE_TO_ENUM = {
   'reporter': payloads.createProposal.enum.REPORTER
 }
 
+// receiver buttons
 const TransferControl = {
   view (vnode) {
     let {record, agents, publicKey, role, label} = vnode.attrs
@@ -556,16 +558,16 @@ const FishDetail = {
             onsuccess: () => _loadData(vnode.attrs.recordId, vnode.state)
           })),
 
-        _row(
-          _labelProperty('Custodian', _agentLink(custodian)),
-          m(TransferControl, {
-            publicKey,
-            record,
-            agents: vnode.state.agents,
-            role: 'custodian',
-            label: 'Custodianship',
-            onsuccess: () => _loadData(vnode.attrs.recordId, vnode.state)
-          })),
+        // _row(
+        //   _labelProperty('Custodian', _agentLink(custodian)),
+        //   m(TransferControl, {
+        //     publicKey,
+        //     record,
+        //     agents: vnode.state.agents,
+        //     role: 'custodian',
+        //     label: 'Custodianship',
+        //     onsuccess: () => _loadData(vnode.attrs.recordId, vnode.state)
+        //   })),
         
         _row(_labelProperty('Path (experimental mode)', _agentLink(owner))),
 
@@ -709,7 +711,7 @@ const _submitProposal = (record, role, publicKey, msg = "Successfully submitted 
   })
 }
 
-const _answerProposal = (record, publicKey, role, response, msg = "Successfully submitted answer") => {
+const _answerProposal = (record, publicKey, role, response, msg = "Successfully submitted action") => {
   let answerPayload = payloads.answerProposal({
     recordId: record.recordId,
     receivingAgent: publicKey,

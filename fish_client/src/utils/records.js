@@ -70,7 +70,8 @@ const checkStatus = (record) => {
 }
 
 const getCurrentOwner = (record) => {
-  return record.owner ? record.owner : "On Process"
+  name = record.owner ? record.owner : "-"
+  return name
 }
 
 const getCurrentCustodian = (record) => {
@@ -89,6 +90,5 @@ module.exports = {
   countPropertyUpdates,
   checkStatus,
   getCurrentOwner,
-  getCurrentCustodian,
   getCurrentReporter
 }

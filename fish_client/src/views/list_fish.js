@@ -60,11 +60,11 @@ const FishList = {
           headers: [
             'Serial Number',
             'Species',
+            'Owner',
             'Added',
             'Updated',
             // 'Updates',
             'Status',
-            // 'Owner',
             // 'Custodian',
             // 'Reporter'
           ],
@@ -76,6 +76,7 @@ const FishList = {
                     oncreate: m.route.link
                   }, truncate(rec.recordId, { length: 32 })),
                   getPropertyValue(rec, 'species'),
+                  getCurrentOwner(rec),
                   // This is the "created" time, synthesized from properties
                   // added on the initial create
                   formatTimestamp(getOldestPropertyUpdateTime(rec)),
@@ -106,9 +107,9 @@ const _controlButtons = (vnode, publicKey) => {
           filters: {
             'All': () => { vnode.state.filteredRecords = vnode.state.records },
             'Owned': () => filterRecords((record) => record.owner === publicKey),
-            'Custodian': () => {
-              let res = filterRecords((record) => record.custodian === publicKey)
-            },
+            // 'Custodian': () => {
+            //   let res = filterRecords((record) => record.custodian === publicKey)
+            // },
             'Reporting': () => filterRecords(
               (record) => record.properties.reduce(
                 (owned, prop) => owned || prop.reporters.indexOf(publicKey) > -1, false))
