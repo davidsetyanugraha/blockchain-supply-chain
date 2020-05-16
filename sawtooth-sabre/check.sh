@@ -1,0 +1,1 @@
+docker exec -it sabre-shell intkey list --url http://rest-api:9708
